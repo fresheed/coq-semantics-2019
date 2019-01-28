@@ -11,6 +11,7 @@ This is a supplementary repository for a one-term course on formal semantics. Th
 - `Id.v` --- definition of identifiers (partially inherited from Benjamin Pierce's Software Foundations);
 - `State.v` --- definition of states and some operations for states;
 - `Expr.v` --- pure strict expressions with big-step evaluation definition and equivalences;
+- `Stmt.v` --- a While-like language with big-step/small-step/CPS semantics, equivalences and properties.
 
 # Installation
 
