@@ -225,6 +225,33 @@ Lemma eq_eq_ceq s1 s2: s1 ~~~ s2 <-> s1 ~c~ s2.
 Proof.
 Admitted.
 
+Section Euclid.
+  Definition m := (Id 0).
+  Definition n := (Id 1).
+  Definition M := Var m.
+  Definition N := Var n.
+
+  Definition body :=
+          COND (M [<] N)
+          THEN n ::= (N [-] M)
+          ELSE m ::= (M [-] N)
+          END.
+
+  Definition euclid :=
+    WHILE (M [/=] N) DO
+          body
+    END.
+  
+  Lemma euclid_terminates st mz nz
+        (VARM : st / m => (Z.of_nat mz))
+        (VARN : st / n => (Z.of_nat nz))
+        (M1   : mz >= 1)
+        (N1   : nz >= 1) :
+    exists st', (st, [], []) == euclid ==> (st', [], []).
+  Proof.
+  Admitted.
+End Euclid.
+
 (* Small-step semantics *)
 Module SmallStep.
   
