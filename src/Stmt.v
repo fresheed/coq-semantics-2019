@@ -7,6 +7,8 @@ Require Export Id.
 Require Export State.
 Require Export Expr.
 
+From hahn Require Import HahnBase.
+
 (* AST for statements *)
 Inductive stmt : Type :=
 | SKIP  : stmt
@@ -242,6 +244,17 @@ Section Euclid.
           body
     END.
   
+  Definition sum_lt st st' :=
+    exists mz nz mz' nz',
+      << VARM  : st  / m => (Z.of_nat mz ) >> /\
+      << VARN  : st  / n => (Z.of_nat nz ) >> /\
+      << VARM' : st' / m => (Z.of_nat mz') >> /\
+      << VARN' : st' / n => (Z.of_nat nz') >> /\
+      << SUM_LT : mz + nz < mz' + nz' >>.
+  
+  Lemma sum_lt_wf : well_founded sum_lt.
+  Proof. Admitted.
+  
   Lemma euclid_terminates st mz nz
         (VARM : st / m => (Z.of_nat mz))
         (VARN : st / n => (Z.of_nat nz))
@@ -249,6 +262,30 @@ Section Euclid.
         (N1   : nz >= 1) :
     exists st', (st, [], []) == euclid ==> (st', [], []).
   Proof.
+    (* SearchAbout well_founded. *)
+    generalize dependent nz.
+    generalize dependent mz.
+    generalize dependent st.
+    apply (@well_founded_ind
+             _ _ sum_lt_wf
+             (fun st => forall (mz : nat)
+              (VALM : (st) / m => (Z.of_nat mz))
+              (M1   : mz >= 1)
+              (nz   : nat)
+              (VALN : (st) / n => (Z.of_nat nz))
+              (N1   : nz >= 1),
+                exists st' : state Z,
+                  ((st, [], [])) == euclid ==>
+                   ((st', [], [])))
+          ).
+    ins. rename x into st. rename H into IND.
+    destruct (Nat.eq_dec mz nz) as [ |NEQ]; subst.
+    { exists st. unfold euclid.
+      apply bs_While_False.
+      econstructor.
+      1,2: by constructor; eauto.
+      reflexivity. }
+    destruct (lt_dec mz nz) as [LT|NLT].
   Admitted.
 End Euclid.
 
