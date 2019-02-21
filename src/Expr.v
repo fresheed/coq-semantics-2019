@@ -22,7 +22,7 @@ Inductive bop : Type :=
 
 (* Type of arithmetic expressions *)
 Inductive expr : Type :=
-| Nat : nat -> expr
+| Nat : Z -> expr
 | Var : id  -> expr              
 | Bop : bop -> expr -> expr -> expr.
 
@@ -51,7 +51,7 @@ Notation "st / x => y" := (st_binds Z st x y) (at level 0).
 
 (* Big-step evaluation relation *)
 Inductive eval : expr -> state Z -> Z -> Prop := 
-  bs_Nat  : forall (s : state Z) (n : nat), [| Nat n |] s => (Z.of_nat n)
+  bs_Nat  : forall (s : state Z) (n : Z), [| Nat n |] s => n
 
 | bs_Var  : forall (s : state Z) (i : id) (z : Z) (VAR : s / i => z),
     [| Var i |] s => z
@@ -172,7 +172,7 @@ where "[| e |] st => z" := (eval e st z).
 
 Module SmokeTest.
 
-  Lemma nat_always n (s : state Z) : [| Nat n |] s => (Z.of_nat n).
+  Lemma nat_always n (s : state Z) : [| Nat n |] s => n.
   Proof. Admitted.
 
 End SmokeTest.
