@@ -171,4 +171,38 @@ Module FactorialEx.
   Proof.
   Admitted.
 End FactorialEx.
+
+Module FastPowEx.
+  Definition x := (Id 0).
+  Definition y := (Id 1).
+  Definition z := (Id 2).
+  Definition X := Var x.
+  Definition Y := Var y.
+  Definition Z := Var z.
+
+  Definition body :=
+    WHILE ((Y [%] (Nat 2)) [==] (Nat 0)) DO
+          (x ::= (X [*] X)) ;;
+          (y ::= (Y [/] (Nat 2)))
+    END ;;
+    (z ::= (Z [*] X)) ;;
+    (y ::= (Y [-] (Nat 1))).
+
+  Definition loop :=
+    WHILE (Y [/=] (Nat 0)) DO
+          body
+    END.
+  
+  Lemma powerSpec m n :
+    {{ fun st =>
+         << XINIT : st / x => m >> /\
+         << YINIT : st / y => n >> /\
+         << ZINIT : st / z => 1%Z >>
+    }} loop {{
+       fun st' =>
+         << ZVAL : st' / z => (m^n)%Z >>
+    }}.
+  Proof.
+  Admitted.
+End FastPowEx.
   
